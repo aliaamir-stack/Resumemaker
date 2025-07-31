@@ -40,12 +40,12 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
-  app.post("/api/auth/user", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/auth/user", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     res.json(req.user);
   });
 
   // Resume routes
-  app.get("/api/resumes", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/resumes", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resumes = await storage.getResumesByUser(req.user.id);
       res.json(resumes);
@@ -54,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
@@ -69,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/resumes", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/resumes", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resumeData = insertResumeSchema.parse({
         ...req.body,
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.put("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
@@ -103,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.delete("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
@@ -134,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI Enhancement routes
-  app.post("/api/ai/enhance", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/ai/enhance", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { section, content } = req.body;
       if (!section || !content) {
@@ -148,7 +148,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ai/achievements", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/ai/achievements", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { role, company, responsibilities } = req.body;
       if (!role || !responsibilities) {
@@ -163,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Job matching
-  app.post("/api/job-match", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/job-match", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { resumeId, jobDescription } = req.body;
       if (!resumeId || !jobDescription) {
@@ -195,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cover letter generation
-  app.post("/api/cover-letter", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/cover-letter", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { resumeId, jobDescription, companyName } = req.body;
       if (!resumeId || !jobDescription) {
@@ -218,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Resume versions
-  app.get("/api/resumes/:id/versions", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.get("/api/resumes/:id/versions", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
@@ -235,7 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/resumes/:id/versions", requireAuth, async (req: AuthenticatedRequest, res) => {
+  app.post("/api/resumes/:id/versions", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
