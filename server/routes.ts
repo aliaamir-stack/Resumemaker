@@ -1,8 +1,8 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { verifySupabaseToken } from "./lib/supabase";
-import { enhanceResumeSection, analyzeJobMatch, generateCoverLetter, generateAchievements } from "./lib/openai";
+import { storage } from "./storage.js";
+import { verifySupabaseToken } from "./lib/supabase.js";
+import { enhanceResumeSection, analyzeJobMatch, generateCoverLetter, generateAchievements } from "./lib/openai.js";
 import { insertUserSchema, insertResumeSchema, insertJobAnalysisSchema, resumeContentSchema, type User } from "@shared/schema";
 import { z } from "zod";
 
