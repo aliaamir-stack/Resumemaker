@@ -40,27 +40,27 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
-  app.post("/api/auth/user", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
-    res.json(req.user);
+  app.post("/api/auth/user", requireAuth, async (req: Request, res: Response) => {
+    res.json((req as AuthenticatedRequest).user);
   });
 
   // Resume routes
-  app.get("/api/resumes", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.get("/api/resumes", requireAuth, async (req: Request, res: Response) => {
     try {
-      const resumes = await storage.getResumesByUser(req.user.id);
+      const resumes = await storage.getResumesByUser((req as AuthenticatedRequest).user.id);
       res.json(resumes);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch resumes" });
     }
   });
 
-  app.get("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.get("/api/resumes/:id", requireAuth, async (req: Request, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
       res.json(resume);
@@ -69,11 +69,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/resumes", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/resumes", requireAuth, async (req: Request, res: Response) => {
     try {
       const resumeData = insertResumeSchema.parse({
         ...req.body,
-        userId: req.user.id,
+        userId: (req as AuthenticatedRequest).user.id,
       });
       const resume = await storage.createResume(resumeData);
       res.json(resume);
@@ -85,13 +85,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.put("/api/resumes/:id", requireAuth, async (req: Request, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -103,13 +103,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/resumes/:id", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.delete("/api/resumes/:id", requireAuth, async (req: Request, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -134,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI Enhancement routes
-  app.post("/api/ai/enhance", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/ai/enhance", requireAuth, async (req: Request, res: Response) => {
     try {
       const { section, content } = req.body;
       if (!section || !content) {
@@ -148,7 +148,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ai/achievements", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/ai/achievements", requireAuth, async (req: Request, res: Response) => {
     try {
       const { role, company, responsibilities } = req.body;
       if (!role || !responsibilities) {
@@ -163,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Job matching
-  app.post("/api/job-match", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/job-match", requireAuth, async (req: Request, res: Response) => {
     try {
       const { resumeId, jobDescription } = req.body;
       if (!resumeId || !jobDescription) {
@@ -174,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -195,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cover letter generation
-  app.post("/api/cover-letter", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/cover-letter", requireAuth, async (req: Request, res: Response) => {
     try {
       const { resumeId, jobDescription, companyName } = req.body;
       if (!resumeId || !jobDescription) {
@@ -206,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -218,13 +218,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Resume versions
-  app.get("/api/resumes/:id/versions", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.get("/api/resumes/:id/versions", requireAuth, async (req: Request, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
 
@@ -235,13 +235,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/resumes/:id/versions", requireAuth, async (req: AuthenticatedRequest, res: Response) => {
+  app.post("/api/resumes/:id/versions", requireAuth, async (req: Request, res: Response) => {
     try {
       const resume = await storage.getResume(req.params.id);
       if (!resume) {
         return res.status(404).json({ message: "Resume not found" });
       }
-      if (resume.userId !== req.user.id) {
+      if (resume.userId !== (req as AuthenticatedRequest).user.id) {
         return res.status(403).json({ message: "Access denied" });
       }
 
