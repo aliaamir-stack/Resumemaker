@@ -1,9 +1,13 @@
 import OpenAI from "openai";
 
+const apiKey = process.env.OPENAI_API_KEY;
+
+if (!apiKey) {
+  throw new Error("The OPENAI_API_KEY environment variable is missing or empty.");
+}
+
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
-});
+const openai = new OpenAI({ apiKey });
 
 export async function enhanceResumeSection(section: string, content: string): Promise<{
   enhanced: string;
